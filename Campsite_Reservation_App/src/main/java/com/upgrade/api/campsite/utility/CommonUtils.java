@@ -8,6 +8,11 @@ import java.util.regex.Pattern;
 
 import com.upgrade.api.campsite.model.Reservation;
 
+/**
+ * @author Ashish.Patel
+ *
+ */
+
 public class CommonUtils {
 
 	public static boolean validateEmail(String emailAddress) {

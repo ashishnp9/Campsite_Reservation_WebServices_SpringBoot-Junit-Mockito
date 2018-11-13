@@ -18,6 +18,10 @@ import com.upgrade.api.campsite.dto.ReservationDto;
 import com.upgrade.api.campsite.dto.ResponseMessageDto;
 import com.upgrade.api.campsite.service.CampsiteService;
 import com.upgrade.api.campsite.utility.constants.CommonConstants;
+/**
+ * @author Ashish.Patel
+ *
+ */
 
 @RestController
 @RequestMapping(CommonConstants.CAMPSITE)
@@ -71,7 +75,6 @@ public class CampsiteController {
 		headers.setLocation(ucBuilder.path(CommonConstants.CAMPSITE+CommonConstants.RESERVATION+"/"+reservationId).buildAndExpand().toUri());
 		ResponseMessageDto messageDto = campsiteService.cancel(reservationId);
 		messageDto.setHttpHeaders(headers);
-		System.out.println("messageDto==> "+messageDto);
 		if(!messageDto.isError()) {
 			return new ResponseEntity<ResponseMessageDto>(messageDto, HttpStatus.NO_CONTENT);
 		}else {

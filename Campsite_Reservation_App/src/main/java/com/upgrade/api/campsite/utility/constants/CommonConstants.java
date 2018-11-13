@@ -1,5 +1,11 @@
 package com.upgrade.api.campsite.utility.constants;
 
+
+/**
+ * @author Ashish.Patel
+ *
+ */
+
 public class CommonConstants {
 	
 	

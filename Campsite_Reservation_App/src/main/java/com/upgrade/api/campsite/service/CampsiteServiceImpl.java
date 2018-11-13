@@ -20,6 +20,11 @@ import com.upgrade.api.campsite.model.Reservation;
 import com.upgrade.api.campsite.utility.CommonUtils;
 import com.upgrade.api.campsite.utility.constants.CommonConstants;
 
+/**
+ * @author Ashish.Patel
+ *
+ */
+
 @Service
 public class CampsiteServiceImpl implements CampsiteService {
 
@@ -57,7 +62,7 @@ public class CampsiteServiceImpl implements CampsiteService {
 			reservation.setEndDate(java.sql.Date.valueOf(CommonUtils.stringtoDate(dto.getEndDate())));
 			reservation.setReservationId(reservationId);
 			reservationDb.put(reservationId, reservation);
-			responseMessageDto.setResponseCode(HttpStatus.OK.value());
+			responseMessageDto.setResponseCode(HttpStatus.CREATED.value());
 			responseMessageDto.setResponseMessage(CommonConstants.RESERVATION_SUCCESS+reservationId);
 							
 		} else {
