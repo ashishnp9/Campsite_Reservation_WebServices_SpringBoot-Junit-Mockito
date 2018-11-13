@@ -58,7 +58,7 @@ public class CampsiteControllerTest {
 	
 	//get all available dates Testing
 	@Test
-	public void getAvailabeDates() throws Exception{
+	public void test1GetAvailabeDates() throws Exception{
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/campsite/dates/").contentType(MediaType.APPLICATION_JSON)
 				.content("").characterEncoding(UTF8).accept(MediaType.APPLICATION_JSON))
@@ -69,7 +69,7 @@ public class CampsiteControllerTest {
 	
 	//Invalid StartDate and EndDate Testing
 	@Test
-	public void createInvalidStartDateEndDate() throws Exception{
+	public void test2CreateInvalidStartDateEndDate() throws Exception{
 		
 		ReservationDto dto = new ReservationDto("Ashish Patel","patel.ashish610@gmail.com","2018-12-","2018-12-","");
 		String input = gson.toJson(dto);
@@ -83,7 +83,7 @@ public class CampsiteControllerTest {
 	
 	//Invalid date combination Testing
 	@Test
-	public void createInvalidStartandEndDate() throws Exception{
+	public void test3CreateInvalidStartandEndDate() throws Exception{
 		
 		ReservationDto dto = new ReservationDto("Ashish Patel","patel.ashish610@gmail.com","2018-12-02","2018-12-01","");
 		String input = gson.toJson(dto);
@@ -96,7 +96,7 @@ public class CampsiteControllerTest {
 	
 	//Success Reservation Testing
 	@Test
-	public void createReservationSuccess() throws Exception{
+	public void test4CreateReservationSuccess() throws Exception{
 		
 		ReservationDto dto = new ReservationDto("Ashish Patel","patel.ashish610@gmail.com","2018-12-01","2018-12-02","");
 		String input = gson.toJson(dto);
@@ -106,22 +106,23 @@ public class CampsiteControllerTest {
 				.andExpect(jsonPath(error).value(false));
 	}
 	
-//	@Test
-//	public void createReservationAlreadybooked() throws Exception{
-//		
-//		ReservationDto dto = new ReservationDto("Ashish Patel","patel.ashish610@gmail.com","2018-12-01","2018-12-02","");
-//		String input = gson.toJson(dto);
-//		mockMvc.perform(MockMvcRequestBuilders.post("/campsite/reservation/").contentType(MediaType.APPLICATION_JSON)
-//				.content(input).characterEncoding(UTF8).accept(MediaType.APPLICATION_JSON))
-//				.andExpect(jsonPath(responseCode).value(HttpStatus.UNPROCESSABLE_ENTITY.value()))
-//				.andExpect(jsonPath(responseMessage).value(CommonConstants.VALIDATION_FAIL_MESSAGE))
-//				.andExpect(jsonPath(errorDiscription).value(CommonConstants.TIMEFRAME_RESERVED))
-//				.andExpect(jsonPath(error).value(true));
-//	}
+	//Reservation Already Booked Testing
+	@Test
+	public void test5CreateReservationAlreadybooked() throws Exception{
+		
+		ReservationDto dto = new ReservationDto("Ashish Patel","patel.ashish610@gmail.com","2018-12-01","2018-12-02","");
+		String input = gson.toJson(dto);
+		mockMvc.perform(MockMvcRequestBuilders.post("/campsite/reservation/").contentType(MediaType.APPLICATION_JSON)
+				.content(input).characterEncoding(UTF8).accept(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath(responseCode).value(HttpStatus.UNPROCESSABLE_ENTITY.value()))
+				.andExpect(jsonPath(responseMessage).value(CommonConstants.VALIDATION_FAIL_MESSAGE))
+				.andExpect(jsonPath(errorDiscription).value(CommonConstants.TIMEFRAME_RESERVED))
+				.andExpect(jsonPath(error).value(true));
+	}
 	
 	//Update fail reservation Testing
 	@Test
-	public void updateReservationFail() throws Exception{
+	public void test6UpdateReservationFail() throws Exception{
 		
 		ReservationDto dto = new ReservationDto("Ashish Patel","patel.ashish61012@gmail.com","2018-12-01","2018-12-02","");
 		String input = gson.toJson(dto);
@@ -136,7 +137,7 @@ public class CampsiteControllerTest {
 	
 	//Delete reservation Fail Testing
 	@Test
-	public void deleteReservationFail() throws Exception{
+	public void test7DeleteReservationFail() throws Exception{
 		
 		mockMvc.perform(MockMvcRequestBuilders.delete("/campsite/reservation/44").contentType(MediaType.APPLICATION_JSON)
 				.content("").characterEncoding(UTF8).accept(MediaType.APPLICATION_JSON))
