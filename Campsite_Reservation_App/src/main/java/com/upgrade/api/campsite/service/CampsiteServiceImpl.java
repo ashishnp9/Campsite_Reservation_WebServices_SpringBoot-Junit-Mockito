@@ -33,7 +33,6 @@ public class CampsiteServiceImpl implements CampsiteService {
 	@Override
 	public ResponseMessageDto getAvailableDates() {
 		List<String> dates = getDates();
-		System.out.println("dates ==> "+dates);
 		ResponseMessageDto dto = new ResponseMessageDto();
 		dto.setError(false);
 		dto.setResponseCode(HttpStatus.OK.value());
@@ -47,7 +46,10 @@ public class CampsiteServiceImpl implements CampsiteService {
 		
 		ResponseMessageDto responseMessageDto = validateData(dto);
 		if (!responseMessageDto.isError()) {
-			String reservationId = String.valueOf(idCounter.getAndIncrement());
+			String reservationId = "";
+			synchronized (this) {
+				reservationId = String.valueOf(idCounter.getAndIncrement());
+			}
 			Reservation reservation = new Reservation();
 			reservation.setEmailAddress(dto.getEmailAddress());
 			reservation.setName(dto.getName());
@@ -191,7 +193,7 @@ public class CampsiteServiceImpl implements CampsiteService {
 			if (!reservedDates.contains(date)) {
 				String available_date = date.toString();
 				available_date = available_date.substring(4, 10);
-				dates.add(available_date);
+				dates.add("[ "+available_date+" ]");
 			}
 			startDate1.add(Calendar.DATE, 1);
 		}

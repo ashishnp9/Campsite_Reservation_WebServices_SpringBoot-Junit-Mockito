@@ -15,7 +15,7 @@ java -jar Campsite_Reservation_App-0.0.1-SNAPSHOT.jar
 
 Verify your RESTful call. URL : 
 
-1) Get request for Availabe dates : 
+1) Get request for Available dates : 
    localhost:8080/campsite/dates
 
 Response : 
