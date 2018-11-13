@@ -18,6 +18,6 @@ public class CommonConstants {
 	public static final String RESERVATION_ID_NOT_AVAILABLE = "Your ReservationId is not available in our System.! Please enter correct reservationId";
 	public static final String RESERVATION_DELETED_SUCCESS = "Your Reservation has been deleted successfully.!";
 	public static final String RESERVATION_ID_NOT_FOUND = "Reservation Id not Found";
-	public static final String AVAILABLE_DATE_SUCCESS = "Availabe Dates successfully fetched..!";
+	public static final String AVAILABLE_DATE_SUCCESS = "Availabe Dates fetched successfully!";
 
 }

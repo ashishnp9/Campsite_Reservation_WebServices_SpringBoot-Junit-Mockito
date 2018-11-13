@@ -1,9 +1,11 @@
 package com.upgrade.api.campsite.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +32,8 @@ public class CampsiteServiceImpl implements CampsiteService {
 	
 	@Override
 	public ResponseMessageDto getAvailableDates() {
-		String dates = getDates();
+		List<String> dates = getDates();
+		System.out.println("dates ==> "+dates);
 		ResponseMessageDto dto = new ResponseMessageDto();
 		dto.setError(false);
 		dto.setResponseCode(HttpStatus.OK.value());
@@ -48,15 +51,13 @@ public class CampsiteServiceImpl implements CampsiteService {
 			Reservation reservation = new Reservation();
 			reservation.setEmailAddress(dto.getEmailAddress());
 			reservation.setName(dto.getName());
-			reservation.setStartDate(java.sql.Date.valueOf(CommonUtils.parseStringToDate(dto.getStartDate())));
-			reservation.setEndDate(java.sql.Date.valueOf(CommonUtils.parseStringToDate(dto.getEndDate())));
+			reservation.setStartDate(java.sql.Date.valueOf(CommonUtils.stringtoDate(dto.getStartDate())));
+			reservation.setEndDate(java.sql.Date.valueOf(CommonUtils.stringtoDate(dto.getEndDate())));
 			reservation.setReservationId(reservationId);
 			reservationDb.put(reservationId, reservation);
-			System.out.println(reservationDb);
 			responseMessageDto.setResponseCode(HttpStatus.OK.value());
 			responseMessageDto.setResponseMessage(CommonConstants.RESERVATION_SUCCESS+reservationId);
 							
-
 		} else {
 			responseMessageDto.setResponseCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
 			responseMessageDto.setResponseMessage(CommonConstants.VALIDATION_FAIL_MESSAGE);
@@ -75,11 +76,9 @@ public class CampsiteServiceImpl implements CampsiteService {
 				Reservation reservation = reservationDb.get(dto.getReservationId());
 				reservation.setEmailAddress(dto.getEmailAddress());
 				reservation.setName(dto.getName());
-				reservation.setStartDate(java.sql.Date.valueOf(CommonUtils.parseStringToDate(dto.getStartDate())));
-				reservation.setEndDate(java.sql.Date.valueOf(CommonUtils.parseStringToDate(dto.getEndDate())));
-
+				reservation.setStartDate(java.sql.Date.valueOf(CommonUtils.stringtoDate(dto.getStartDate())));
+				reservation.setEndDate(java.sql.Date.valueOf(CommonUtils.stringtoDate(dto.getEndDate())));
 				reservationDb.put(dto.getReservationId(), reservation);
-				System.out.println(reservationDb);
 				messageDto.setResponseCode(HttpStatus.OK.value());
 				messageDto.setResponseMessage(CommonConstants.UPDATE_RESERVATION_SUCCESS);
 
@@ -104,7 +103,6 @@ public class CampsiteServiceImpl implements CampsiteService {
 			messageDto.setError(false);
 			messageDto.setResponseCode(HttpStatus.NO_CONTENT.value());
 			messageDto.setResponseMessage(CommonConstants.RESERVATION_DELETED_SUCCESS);
-			System.out.println("In cancel db => "+reservationDb);
 		} else {
 			messageDto.setError(true);
 			messageDto.setErrorDiscription(CommonConstants.RESERVATION_ID_NOT_AVAILABLE);
@@ -119,13 +117,13 @@ public class CampsiteServiceImpl implements CampsiteService {
 		Date startDateFormatted = null, endDateFormatted = null;
 		rDto.setError(true);
 		if (CommonUtils.validateDate(dto.getStartDate()) && CommonUtils.validateDate(dto.getEndDate())) {
-			startDateFormatted = java.sql.Date.valueOf(CommonUtils.parseStringToDate(dto.getStartDate()));
-			endDateFormatted = java.sql.Date.valueOf(CommonUtils.parseStringToDate(dto.getEndDate()));
+			startDateFormatted = java.sql.Date.valueOf(CommonUtils.stringtoDate(dto.getStartDate()));
+			endDateFormatted = java.sql.Date.valueOf(CommonUtils.stringtoDate(dto.getEndDate()));
 			if (CommonUtils.isValidStartDate(startDateFormatted)) {
 				if (CommonUtils.isValidEndDate(endDateFormatted)) {
-					if (CommonUtils.compareStartEndDates(startDateFormatted, endDateFormatted)) {
-						if (CommonUtils.validateEmailAddress(dto.getEmailAddress())) {
-							if (CommonUtils.validateFullName(dto.getName())) {
+					if (CommonUtils.compareStartEndDate(startDateFormatted, endDateFormatted)) {
+						if (CommonUtils.validateEmail(dto.getEmailAddress())) {
+							if (CommonUtils.nameValidation(dto.getName())) {
 								if (CommonUtils.isValidDateRange(reservationDb, startDateFormatted, endDateFormatted)) {
 									rDto.setError(false);
 
@@ -161,11 +159,12 @@ public class CampsiteServiceImpl implements CampsiteService {
 		reservationDb = new ConcurrentHashMap<>();
 	}
 	
-	private String getDates() {
-		StringBuilder stringBuilder = new StringBuilder("");
+	private List<String> getDates() {
+		List<String> dates = new ArrayList<>();
 		Set<Date> reservedDates = new HashSet<>();
 		Calendar startDate = Calendar.getInstance();
 		Calendar endDate = Calendar.getInstance();
+		
 		for (Map.Entry<String, Reservation> entry : reservationDb.entrySet()) {
 			Reservation reservation = entry.getValue();
 
@@ -177,26 +176,26 @@ public class CampsiteServiceImpl implements CampsiteService {
 				startDate.add(Calendar.DATE, 1);
 			}
 		}
+		
 		LocalDate localToday_date = java.time.LocalDate.now();
 		localToday_date = localToday_date.plusDays(1);
 		Date today = java.sql.Date.valueOf(localToday_date);
 		LocalDate lastAllowedLocalDate = LocalDate.now().plusMonths(1);
 		Date lastAllowedDate = java.sql.Date.valueOf(lastAllowedLocalDate);
-		startDate.setTime(today);
-		endDate.setTime(lastAllowedDate);
-
-		while (!startDate.after(endDate)) {
-			Date target = startDate.getTime();
-			if (reservedDates.contains(target)) {
-				continue;
-			} else {
-				String available_date = target.toString();
+		Calendar startDate1 = Calendar.getInstance();
+		Calendar endDate1 = Calendar.getInstance();
+		startDate1.setTime(today);
+		endDate1.setTime(lastAllowedDate);
+		while (!startDate1.after(endDate1)) {
+			Date date = startDate1.getTime();
+			if (!reservedDates.contains(date)) {
+				String available_date = date.toString();
 				available_date = available_date.substring(4, 10);
-				stringBuilder.append("["+available_date+"] ");
+				dates.add(available_date);
 			}
-			startDate.add(Calendar.DATE, 1);
+			startDate1.add(Calendar.DATE, 1);
 		}
-		return stringBuilder.toString();
+		return dates;
 	}
 
 	

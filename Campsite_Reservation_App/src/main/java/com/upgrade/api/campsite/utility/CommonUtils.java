@@ -10,63 +10,32 @@ import com.upgrade.api.campsite.model.Reservation;
 
 public class CommonUtils {
 
-	public static boolean validateDate(String stringDate) {
-		if (stringDate.length() == 0) {
-			return false;
-		}
-		try {
-			LocalDate date = LocalDate.parse(stringDate);
+	public static boolean validateEmail(String emailAddress) {
+		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z" + "A-Z]{2,7}$";
 
-		} catch (Exception e) {
+		Pattern pattern = Pattern.compile(regex);
+		if (emailAddress == null)
 			return false;
-		}
-		return true;
+		return pattern.matcher(emailAddress).matches();
 	}
 
-	public static boolean validateEmailAddress(String email) {
-		String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
-				+ "A-Z]{2,7}$";
-
-		Pattern pat = Pattern.compile(emailRegex);
-		if (email == null)
-			return false;
-		return pat.matcher(email).matches();
-	}
-
-	public static boolean validateFullName(String fullName) {
-		if (fullName.length() == 0) {
-			return false;
-		}
-		String arr[] = fullName.split(" ");
-		if (arr.length < 2 || arr.length > 3) {
-			return false;
-		}
-		return true;
-	}
-
-	public static LocalDate parseStringToDate(String stringDate) {
-		LocalDate date = LocalDate.parse(stringDate);
+	public static LocalDate stringtoDate(String dateInString) {
+		LocalDate date = LocalDate.parse(dateInString);
 		return date;
 	}
 
 	public static boolean isValidStartDate(Date date) {
 
-		Date today = java.sql.Date.valueOf(java.time.LocalDate.now());
-
-		// You can reserve the campsite minimum 1 days before the date of arrival
-		if (date.equals(today)) {
+		if (date.equals(java.sql.Date.valueOf(java.time.LocalDate.now()))) {
 			return false;
 		}
 
-		// You cannot make a reservation in the past
-		else if (date.before(today)) {
+		else if (date.before(java.sql.Date.valueOf(java.time.LocalDate.now()))) {
 			return false;
 		}
 
-		LocalDate lastAllowedLocalDate = LocalDate.now().plusMonths(1);
-		java.util.Date lastAllowedDate = java.sql.Date.valueOf(lastAllowedLocalDate);
+		java.util.Date lastAllowedDate = java.sql.Date.valueOf(LocalDate.now().plusMonths(1));
 
-		// You can reserve a month maximum in advance
 		if (date.after(lastAllowedDate)) {
 			return false;
 		}
@@ -74,17 +43,14 @@ public class CommonUtils {
 		return true;
 	}
 
-	public static boolean compareStartEndDates(Date startDate, Date endDate) {
+	public static boolean compareStartEndDate(Date startDate, Date endDate) {
 
-		// endDate needs to be the same or later than startDate
 		if (endDate.before(startDate)) {
 			return false;
 		}
 		long days = endDate.getTime() - startDate.getTime();
 		days = TimeUnit.DAYS.convert(days, TimeUnit.MILLISECONDS);
 
-		// Campsite can be reserved for maximum 3 days
-		System.out.println("Days = " + days);
 		if (days > 3) {
 
 			return false;
@@ -95,25 +61,28 @@ public class CommonUtils {
 
 	public static boolean isValidEndDate(Date date) {
 
-		// You can reserve a month in advance
+		java.util.Date lastAllowedDate = java.sql.Date.valueOf(LocalDate.now().plusMonths(1));
 
-		LocalDate lastAllowedLocalDate = LocalDate.now().plusMonths(1);
-		java.util.Date lastAllowedDate = java.sql.Date.valueOf(lastAllowedLocalDate);
-
-		// You can reserve a month maximum in advance
 		if (date.after(lastAllowedDate)) {
 			return false;
 		}
 
-		// You cannot make a reservation in the past
-		Date today = java.sql.Date.valueOf(java.time.LocalDate.now());
-		return !(date.before(today));
+		return !(date.before(java.sql.Date.valueOf(java.time.LocalDate.now())));
+	}
+
+	public static boolean validateDate(String stringDate) {
+		if (stringDate.length() == 0) {
+			return false;
+		}
+		try {
+			LocalDate.parse(stringDate);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 	public static boolean isValidDateRange(Map<String, Reservation> reservationsDb, Date startDate, Date endDate) {
-
-		System.out.println("reservationsDb ==> " + reservationsDb);
-
 		for (Map.Entry<String, Reservation> entry : reservationsDb.entrySet()) {
 
 			Reservation reservation = entry.getValue();
@@ -126,4 +95,14 @@ public class CommonUtils {
 		return true;
 	}
 
+	public static boolean nameValidation(String name) {
+		if (name.length() == 0) {
+			return false;
+		}
+		String nameArr[] = name.split(" ");
+		if (nameArr.length < 2 || nameArr.length > 3) {
+			return false;
+		}
+		return true;
+	}
 }
