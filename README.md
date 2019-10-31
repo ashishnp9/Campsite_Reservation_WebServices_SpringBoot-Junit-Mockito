@@ -86,3 +86,6 @@ Response :
 
 4) Delete request for Delete Reservation : 
    localhost:8080/campsite/reservation/3
+   
+   
+   #https://medium.com/faun/setup-a-circleci-pipeline-for-a-containerized-spring-boot-app-93045fa060de
